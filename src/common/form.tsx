@@ -2,37 +2,43 @@
 
 import { FormEvent, useState } from 'react'
 import TextInput from '@component/common/textInput'
-import { ErrorProps, FormValuesProps } from '@component/common/types'
+import SvgImg from '@component/common/svg'
+import { ErrorProps, FormValuesProps, InputProps } from '@component/common/types'
 import { emailRegex, urlRegex } from '@component/common/functions'
 
 function Form() {
   const [formError, setFormError] = useState<ErrorProps[] | undefined>(undefined)
   const [formSubmission, setFormSubmission] = useState<boolean | undefined>(false)
   const [formValues, setFormValues] = useState<FormValuesProps>({formURL: ''})
+  const [formStep, setFormStep] = useState<number>(1)
 
-  function handleOnChange(input: { name: string, value: string }, isRequired?: boolean, feedback?: string) {
+  function isValid(value: string, isEmail?: boolean, isURL?: boolean): boolean {
+    if (
+      (!!value && value?.trim() !== '')
+      && ((isEmail && emailRegex.test(value)) || !isEmail)
+      && ((isURL && urlRegex.test(value)) || !isURL)
+    ) return true
+    
+    return false
+  }
+
+  function handleOnChange(input: InputProps, isRequired?: boolean, feedback?: string) {
     const { name, value } = input
     setFormValues((prev) => ({ ...prev, [name]: value }))
     !!isRequired && handleErrors(input, isRequired && !!feedback ? feedback : '')
   }
 
-  function handleOnBlur(input: { name: string, value: string }, isRequired?: boolean, feedback?: string, isEmail?: boolean, isURL?: boolean) {
+  function handleOnBlur(input: InputProps, isRequired?: boolean, feedback?: string, isEmail?: boolean, isURL?: boolean) {
     !!isRequired && handleErrors(input, isRequired && !!feedback ? feedback : '', isEmail, isURL)
   }
  
-  function handleErrors(input: { name: string, value: string }, errorMessage: string, isEmail?: boolean, isURL?: boolean) {
+  function handleErrors(input: InputProps, errorMessage: string, isEmail?: boolean, isURL?: boolean) {
     const { name, value } = input
     const errorObj = { input: name, message: errorMessage } as ErrorProps
     const activeError = !!formError?.find(error => error?.input === name)
     if (formSubmission || formSubmission === undefined) resetSubmissionError()
 
-    if (
-      (
-        (!value || value?.trim() === '')
-        || (isEmail && !emailRegex.test(value))
-        || (isURL && !urlRegex.test(value))
-      ) && !activeError
-    ) {
+    if (!isValid(value, isEmail, isURL) && !activeError) {
       setFormError(
         errors => errors && errors?.length > 0 ?
         [...errors, errorObj] :
@@ -41,15 +47,15 @@ function Form() {
       return
     }
 
-    if (
-      (!!value && value?.trim() !== '')
-      && ((isEmail && emailRegex.test(value)) || !isEmail)
-      && ((isURL && !urlRegex.test(value)) || !isURL)
-      && activeError
-    ) {
+    if (isValid(value, isEmail, isURL) && activeError) {
       setFormError(errors => errors?.filter(error => error?.input !== name))
       return
     }
+  }
+
+  function handleResetInput(inputName: string) {
+    setFormValues((prev) => ({ ...prev, [inputName]: '' }))
+    setFormError(errors => errors?.filter(error => error?.input !== inputName))
   }
 
   const handleSubmit = async (event: FormEvent) => {
@@ -65,31 +71,57 @@ function Form() {
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-      <TextInput
-        type={'url'}
-        name={'formURL'}
-        value={formValues.formURL}
-        error={formError?.find(error => error?.input === 'formURL')}
-        label={'Webpage URL'}
-        handleOnChange={handleOnChange}
-        handleOnBlur={handleOnBlur}
-        feedbackMessage={'Please provide a valid url'}
-        isRequired={true}
-        helperText={'Example: https://www.informaticsinc.com'}
-        isURL={true}
-      />
       <div className='form-group'>
+        <h2><strong>Step 1</strong></h2>
+        <p>Type or paste a URL in the field below and we can start generating some content.</p>
+        <TextInput
+          type={'url'}
+          name={'formURL'}
+          value={formValues.formURL}
+          error={formError?.find(error => error?.input === 'formURL')}
+          label={'Webpage URL'}
+          handleOnChange={handleOnChange}
+          handleOnBlur={handleOnBlur}
+          handleResetInput={handleResetInput}
+          feedbackMessage={'Please provide a valid URL'}
+          isRequired={true}
+          helperText={'Example: https://www.informaticsinc.com'}
+          isURL={true}
+        />
+      </div>
+      {formStep > 1 ? (
+        <>
+          <hr className='form-group-divider' />
+          <div className='form-group'>
+            <h2><strong>Step 2</strong></h2>
+            <p>Type or paste a URL in the field below and we can start generating some content.</p>
+          </div>
+        </>
+      ) : null}
+      <div className='form-group form-actions'>
         {formSubmission === undefined ? (
           <em className="loader"><span className="loader-icn"><span></span><span></span><span></span><span></span></span> Loading</em>
         ) : (
           <>
-            {!!formError && !!formError?.find(error => error?.input === 'formSubmit') && <em><strong>Error: </strong>{formError?.find(error => error?.input === 'formSubmit')?.message}</em>}
-            <button type="submit" className="btn" disabled={!formValues.formURL ? true : false}>Submit</button>
-            {formSubmission ? (
-              <em className="form-feedback success">Your message is on its way</em>
-            ) : (
-              <small><em><sup>*</sup>All fields required</em></small>
-            )}
+            {formStep > 1 ? (
+              <button
+                type="button"
+                className='btn btn-icn'
+                aria-label='Previous Step'
+                onClick={() => { setFormStep(currentStep => currentStep - 1) }}
+              >
+                <SvgImg name={'back'} type={'icn'} role={'img'} width={16} height={16} /> Previous Step
+              </button>
+            ) : null}
+            <button
+              type="button"
+              className='btn btn-icn'
+              aria-label='Next Step'
+              disabled={!formValues.formURL ? true : false}
+              onClick={() => { setFormStep(currentStep => currentStep + 1) }}
+            >
+              Next Step <SvgImg name={'next'} type={'icn'} role={'img'} width={16} height={16} />
+            </button>
           </>
         )}
       </div>

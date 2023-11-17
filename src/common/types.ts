@@ -1,11 +1,14 @@
 import React, { KeyboardEvent } from 'react'
 
+export type PageTemplates = 'one-col' | 'two-col' | 'three-col';
+
 export type ContainerProps = {
   children: React.ReactNode;
   page: string;
+  pageTemplate?: PageTemplates;
 }
 
-export type HeaderProps = {
+export type AsideProps = {
   page: string;
 }
 
@@ -26,7 +29,7 @@ export type UIDProps = {
   uid: string | undefined;
 }
 
-export type IconNames = 'bg' | 'cloudy' | 'partlyCloudy' | 'rainy' | 'snowy' | 'stormy' | 'sunny' | 'email' | 'phone' | 'facebook' | 'linkedin'
+export type IconNames = 'back' | 'next' | 'email' | 'phone' | 'facebook' | 'linkedin' | 'dashboard' | 'analysis' | 'coding'
 
 export type IconTypes = 'bg' | 'img' | 'icn'
 
@@ -61,14 +64,19 @@ export type InputElementTypes = HTMLTextAreaElement | HTMLInputElement | HTMLSel
 
 export type TextInputTypes = 'textarea' | 'email' | 'hidden' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url'
 
+export type InputProps = {
+  name: string;
+  value: string;
+}
+
 export type TextInputProps = {
   type: TextInputTypes;
   name: string;
   value: string;
   error: ErrorProps | undefined;
   label: string;
-  handleOnChange: (input: { name: string, value: string }, isRequired?: boolean, feedback?: string, override?: boolean) => void;
-  handleOnBlur: (input: { name: string, value: string }, isRequired?: boolean, feedback?: string, isEmail?: boolean, isURL?: boolean) => void;
+  handleOnChange: (input: InputProps, isRequired?: boolean, feedback?: string, override?: boolean) => void;
+  handleOnBlur: (input: InputProps, isRequired?: boolean, feedback?: string, isEmail?: boolean, isURL?: boolean) => void;
   handleOnKeyUp?: (event: KeyboardEvent<HTMLInputElement> | KeyboardEvent<HTMLTextAreaElement>) => void;
   handleResetInput?: (inputName: string) => void;
   feedbackMessage?: string;
