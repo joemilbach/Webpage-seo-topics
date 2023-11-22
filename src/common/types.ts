@@ -12,12 +12,6 @@ export type AsideProps = {
   page: string;
 }
 
-export type NavProps = {
-  name: string;
-  label: string;
-  url: string;
-}
-
 export type ImageProps = {
   src: string;
   width: number;
@@ -29,7 +23,7 @@ export type UIDProps = {
   uid: string | undefined;
 }
 
-export type IconNames = 'back' | 'next' | 'email' | 'phone' | 'facebook' | 'linkedin' | 'dashboard' | 'analysis' | 'coding'
+export type IconNames = 'back' | 'next' | 'email' | 'phone' | 'facebook' | 'linkedin' | 'dashboard' | 'analysis' | 'coding' | 'list'
 
 export type IconTypes = 'bg' | 'img' | 'icn'
 
@@ -43,12 +37,33 @@ export type SvgProps = {
   role?: string;
 }
 
+export type NavProps = {
+  uid: string;
+  label: string;
+  url: string;
+  icn: SvgProps;
+  displayHeading?: string;
+  displayBody?: string;
+}
+
 export type ContactNavProps = {
   uid: string;
   url: string;
   label: string;
   icn: SvgProps;
   targetBlank?: boolean;
+}
+
+export type LinkProps = {
+  url: string;
+  target?: string;
+}
+
+export type CardProps = {
+  children: React.ReactNode;
+  isLinked: boolean;
+  link?: LinkProps;
+  customClass?: string;
 }
 
 export type ErrorProps = {

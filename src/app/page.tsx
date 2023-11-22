@@ -1,7 +1,10 @@
 import React from 'react'
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { NavProps, CardProps } from '@component/common/types'
+import { navList } from '@component/common/constants'
 import Container from '@component/common/container'
+import Card from '@component/common/card'
 import SvgImg from '@component/common/svg'
 import InspirationalQuote from './inspirationalQuote'
 
@@ -28,23 +31,28 @@ export default function Page() {
         <p>Choose one of the options below.</p>
 
         <div className="card-grid">
-          <Link className="card card-link" href="/analysis">
-            <span className="h2"><SvgImg name={'analysis'} type={'icn'} role={'img'} width={16} height={16} /> Content Analysis</span>
-            <span className="p">Give Marky a URL or text document and have him learn how to generate content in specific style.</span>
-          </Link>
-          
-          <Link className="card card-link" href="/html">
-            <span className="h2"><SvgImg name={'coding'} type={'icn'} role={'img'} width={16} height={16} /> HTML Generation</span>
-            <span className="p">Upload a Word document and Marky will turn that into HTML for you.</span>
-          </Link>
+          {navList.map(({ uid, displayHeading, displayBody, url, icn }: NavProps) => {
+            return (!!displayHeading && displayHeading !== '' ? (
+              <Card key={uid} isLinked={true} link={{url}}>
+                <span className="h2">
+                  <SvgImg name={icn.name} type={icn.type} role={icn.role} width={icn.width} height={icn.height} />
+                  {displayHeading}
+                </span>
+                <span className="p">
+                  {displayBody}
+                </span>
+              </Card>
+            ) : null)
+          })}
+
+          <div className="card">
+            <InspirationalQuote />
+          </div>
 
           <div className="card">
             <span className="h2">More Coming <em>Soon<sup>™</sup></em></span>
             <span className="p">Marky Marketing is just getting started. Adam&apos;s Coffee Shop™ is dedicated to making him work his fingers to the bone.</span>
-          </div>
-
-          <div className="card">
-            <InspirationalQuote />
+            <span className="p">Language Translation, Website Audit, Summarization...</span>
           </div>
         </div>
 
