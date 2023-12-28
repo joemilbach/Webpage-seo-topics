@@ -1,43 +1,87 @@
 'use client'
 
 import React from 'react'
-import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime'
+import { AWSCredentials, CohereRequestBody } from '@component/common/types'
+import { BedrockRuntimeClient, InvokeModelCommand, InvokeModelCommandInput } from '@aws-sdk/client-bedrock-runtime'
 
 export default function InspirationalQuote() {
-  const [showQuote, setShowQuote] = React.useState<boolean>(false)
-  
-  //const [test, setTest] = React.useState<string | null>(null)
-
-  /* const client = new BedrockRuntimeClient({ region: "us-east-1" });
-
-  const params = {
+  const awsRegion = !!process?.env.NEXT_PUBLIC_AWS_REGION ? process.env.NEXT_PUBLIC_AWS_REGION : ''
+  const awsAccessKeyID = !!process?.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID ? process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID : ''
+  const awsSecretAccessKey = !!process?.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY ? process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY : ''
+  const awsSessionToken = !!process?.env.NEXT_PUBLIC_AWS_SESSION_TOKEN ? process.env.NEXT_PUBLIC_AWS_SESSION_TOKEN : ''
+  const bedrockModelID = !!process?.env.NEXT_PUBLIC_MODEL_ID ? process.env.NEXT_PUBLIC_MODEL_ID : ''
+  const [modelResponse, setModelResponse] = React.useState<any>(null)
+  const [error, setError] = React.useState<any>(null)
+  const [quote, setQuote] = React.useState<boolean>(false)
+  const [loading, setLoading] = React.useState<boolean>(false)
+  const prompt = `Find one smaller quote from Deep Thoughts by Jack Handey. Put a span html tag around the whole quote.`;
+  const credentials: AWSCredentials = {
+    accessKeyId: awsAccessKeyID,
+    secretAccessKey: awsSecretAccessKey,
+    sessionToken: awsSessionToken,
   }
 
-  const command = new InvokeModelCommand(params)
+  const requestBody: CohereRequestBody = {
+    prompt,
+    temperature: 1.25,
+    p: 0.7,
+    k: 0,
+    max_tokens: 250.
+  }
 
-  try {
-    const data = await client.send(command);
-    // process data.
-  } catch (error) {
-    // error handling.
-  } finally {
-    // finally.
-  } */
-  
+  const bedrockRunTimeClient = new BedrockRuntimeClient({
+    region: awsRegion,
+    credentials,
+  })
+
+  const invokeModelInput: InvokeModelCommandInput = {
+    modelId: bedrockModelID,
+    contentType: "application/json",
+    accept: "*/*",
+    body: JSON.stringify(requestBody),
+  }
+
+  const command = new InvokeModelCommand(invokeModelInput)
+
+  async function getQuote() {
+    setQuote(false)
+    setLoading(true)
+    try {
+      const response = await bedrockRunTimeClient.send(command)
+      const jsonResponse = Buffer.from(response?.body).toString('utf8')
+      const responseData = JSON.parse(jsonResponse)
+      const responseText = responseData?.generations[0]?.text
+      const formatQuote = responseText?.match(/<\s*span[^>]*>(.*?)<\s*\/\s*span>/g)
+      const quoteText = !!formatQuote ? formatQuote[0].replaceAll(/(<([^>]+)>)/gi, '') : ''
+
+      if(!!quoteText && quoteText !== '') setModelResponse(quoteText)
+    } catch (error) {
+      console.log("error: ", error)
+      setError(error)
+    } finally {
+      setQuote(true)
+      setLoading(false)
+    }
+  }
+
   return (
     <>
-      <span className="h2">Adam&apos;s Coffee Shop™ Inspiration</span>
+      <span className="h2">Adam&apos;s Coffee Shop™ Thoughts</span>
       <div className="inspirational-quote">
-        <button
-          type="button"
-          className='btn'
-          aria-label='Get inspirational quote'
-          onClick={() => { setShowQuote(prev => !prev) }}
-        >
-          Get Inspired
-        </button>
-        {showQuote ? (
-          <blockquote style={{ marginTop: '1rem' }}>&quot;If they ever come up with a swashbuckling School, I think one of the courses should be Laughing, Then Jumping Off Something.&quot;</blockquote>
+        {loading ? (<p><em className="text-primary loader-fade">I will give you a moment to prepare yourself...</em></p>) : (
+          <button
+            type="button"
+            className='btn'
+            aria-label='Get deep thought'
+            onClick={() => {
+              getQuote()
+            }}
+          >
+            Food for Thought
+          </button>
+        )}
+        {quote ? (
+          <blockquote className="fade-in" style={{ marginTop: '1rem' }}><em>{modelResponse}</em></blockquote>
         ) : null}
       </div>
     </>

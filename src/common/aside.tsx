@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import SvgImg from '@component/common/svg'
-import { AsideProps } from './types'
+import { AsideProps, NavProps } from './types'
+import { navList } from '@component/common/constants'
 
 function Aside({ page }: AsideProps) {
   const [mobileMenuActive, setMobileMenuActive] = useState(false)
@@ -26,9 +27,13 @@ function Aside({ page }: AsideProps) {
       </div>
 
       <nav className="nav nav-vertical">
-        <Link className={page === 'dashboard' ? 'nav-link active' : 'nav-link'} href="/"><SvgImg name={'dashboard'} type={'icn'} role={'img'} width={16} height={16} /> Dashboard</Link>
-        <Link className="nav-link" href="/analysis"><SvgImg name={'analysis'} type={'icn'} role={'img'} width={16} height={16} /> Content Analysis</Link>
-        <Link className="nav-link" href="/html"><SvgImg name={'coding'} type={'icn'} role={'img'} width={16} height={16} /> HTML Generation</Link>
+        {navList.map(({ uid, displayHeading, label, url, icn }: NavProps) => {
+          return (!!displayHeading && displayHeading !== '' ? (
+            <Link key={uid} className={page === uid ? 'nav-link active' : 'nav-link'} href={url}>
+              <SvgImg name={icn.name} type={icn.type} role={icn.role} width={icn.width} height={icn.height} /> {label}
+            </Link>
+          ) : null)
+        })}
       </nav>
     </aside>
   )

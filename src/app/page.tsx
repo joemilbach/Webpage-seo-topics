@@ -1,7 +1,7 @@
 import React from 'react'
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { NavProps, CardProps } from '@component/common/types'
+import { NavProps } from '@component/common/types'
 import { navList } from '@component/common/constants'
 import Container from '@component/common/container'
 import Card from '@component/common/card'
@@ -52,7 +52,7 @@ export default function Page() {
           <div className="card">
             <span className="h2">More Coming <em>Soon<sup>™</sup></em></span>
             <span className="p">Marky Marketing is just getting started. Adam&apos;s Coffee Shop™ is dedicated to making him work his fingers to the bone.</span>
-            <span className="p">Language Translation, Website Audit, Summarization...</span>
+            <span className="p">Website Audit, Summarization...</span>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 import { PromiseWithCancel, ApiMethods } from '@component/common/types'
 import { Url } from 'next/dist/shared/lib/router/router'
+import { InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime'
 
 export function timestampToDate(timestamp: number): Date {
   const date = new Date(timestamp * 1000);
@@ -34,35 +35,6 @@ export function capitalizedSentence(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-export function weatherCondition(condition: string) {
-  const weatherMain = !!condition ? condition.toLowerCase() : ''
-  switch (weatherMain) {
-    case 'mist':
-    case 'smoke':
-    case 'haze':
-    case 'dust':
-    case 'fog':
-    case 'sand':
-    case 'ash':
-    case 'squall':
-      return `partlyCloudy`
-    case 'thunderstorm':
-    case 'tornado':
-      return `stormy`
-    case 'drizzle':
-    case 'rain':
-      return `rainy`
-    case 'clouds':
-      return `cloudy`
-    case 'snow':
-      return `snowy`
-    case 'clear':
-        return `sunny`
-    default:
-      return `cloudy`
-  }
-}
-
 function isAbortError(error: any): error is DOMException {
   if(!!error && error.name !== 'AbortError') return true
   return false
@@ -92,6 +64,27 @@ export function apiRequest(url: Url, queryString: string | undefined, method: Ap
   });
   (promise as PromiseWithCancel<any>).cancel = () => controller.abort()
   return promise as PromiseWithCancel<any>
+}
+
+export async function bedrockSendCommand(command: InvokeModelCommand, response: React.Dispatch<React.SetStateAction<any>>, loading: React.Dispatch<React.SetStateAction<boolean>>) {
+  /* setQuote(false)
+  setLoading(true)
+  try {
+    const response = await bedrockRunTimeClient.send(command)
+    const jsonResponse = Buffer.from(response?.body).toString('utf8')
+    const responseData = JSON.parse(jsonResponse)
+    const responseText = responseData?.generations[0]?.text
+    const formatQuote = responseText?.match(/<\s*span[^>]*>(.*?)<\s*\/\s*span>/g)
+    const quoteText = !!formatQuote ? formatQuote[0].replaceAll(/(<([^>]+)>)/gi, '') : ''
+
+    if(!!quoteText && quoteText !== '') setModelResponse(quoteText)
+  } catch (error) {
+    console.log("error: ", error)
+    setError(error)
+  } finally {
+    setQuote(true)
+    setLoading(false)
+  } */
 }
 
 export function removeBodyClasses() {

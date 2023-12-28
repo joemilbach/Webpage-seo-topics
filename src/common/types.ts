@@ -23,7 +23,7 @@ export type UIDProps = {
   uid: string | undefined;
 }
 
-export type IconNames = 'back' | 'next' | 'email' | 'phone' | 'facebook' | 'linkedin' | 'dashboard' | 'analysis' | 'coding' | 'list'
+export type IconNames = 'back' | 'next' | 'email' | 'phone' | 'facebook' | 'linkedin' | 'dashboard' | 'analysis' | 'coding' | 'list' | 'translate' | 'review' | 'notes'
 
 export type IconTypes = 'bg' | 'img' | 'icn'
 
@@ -110,3 +110,17 @@ export interface PromiseWithCancel<T> extends Promise<T> {
 }
 
 export type ApiMethods = 'GET' | 'POST' | 'PUT' | 'DELETE'
+
+export type AWSCredentials = {
+  accessKeyId: string,
+  secretAccessKey: string,
+  sessionToken: string
+}
+
+export type CohereRequestBody = {
+  prompt: string,
+  temperature: number,
+  p: number
+  k: number,
+  max_tokens: number
+}
