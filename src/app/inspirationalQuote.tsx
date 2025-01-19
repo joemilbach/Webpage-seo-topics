@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { awsRegion, bedrockModelID } from '@component/common/constants'
-import { AWSCredentials, CohereRequestBody } from '@component/common/types'
+import { AWSCredentials, LlamaRequestBody } from '@component/common/types'
 import { BedrockRuntimeClient, InvokeModelCommand, InvokeModelCommandInput } from '@aws-sdk/client-bedrock-runtime'
 
 export default function InspirationalQuote() {
@@ -13,19 +13,24 @@ export default function InspirationalQuote() {
   const [error, setError] = React.useState<any>(null)
   const [quote, setQuote] = React.useState<boolean>(false)
   const [loading, setLoading] = React.useState<boolean>(false)
-  const prompt = `Find one smaller quote from Deep Thoughts by Jack Handey. Put a span html tag around the whole quote.`;
+  const promptMessage = `Find one smaller quote from Deep Thoughts by Jack Handey. Format the quote inside an html span tag.`;
   const credentials: AWSCredentials = {
     accessKeyId: awsAccessKeyID,
     secretAccessKey: awsSecretAccessKey,
     sessionToken: awsSessionToken,
   }
 
-  const requestBody: CohereRequestBody = {
+  const prompt = 
+  `<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+  ${promptMessage}
+  <|eot_id|>
+  <|start_header_id|>assistant<|end_header_id|>`
+
+  const requestBody: LlamaRequestBody = {
     prompt,
-    temperature: 1.25,
-    p: 0.7,
-    k: 0,
-    max_tokens: 250.
+    max_gen_len: 250,
+    temperature: 0.7,
+    top_p: 0.9
   }
 
   const bedrockRunTimeClient = new BedrockRuntimeClient({
@@ -34,10 +39,9 @@ export default function InspirationalQuote() {
   })
 
   const invokeModelInput: InvokeModelCommandInput = {
-    modelId: bedrockModelID[2],
     contentType: "application/json",
-    accept: "*/*",
     body: JSON.stringify(requestBody),
+    modelId: bedrockModelID[2]
   }
 
   const command = new InvokeModelCommand(invokeModelInput)
@@ -49,9 +53,10 @@ export default function InspirationalQuote() {
       const response = await bedrockRunTimeClient.send(command)
       const jsonResponse = Buffer.from(response?.body).toString('utf8')
       const responseData = JSON.parse(jsonResponse)
-      const responseText = responseData?.generations[0]?.text
-      const formatQuote = responseText?.match(/<\s*span[^>]*>(.*?)<\s*\/\s*span>/g)
-      const quoteText = !!formatQuote ? formatQuote[0].replaceAll(/(<([^>]+)>)/gi, '') : ''
+      const responseText = responseData?.generation
+      const hasSpan = !!responseText?.match(/<\s*span[^>]*>(.*?)<\s*\/\s*span>/g)
+      const formatQuote = hasSpan ? responseText?.match(/<\s*span[^>]*>(.*?)<\s*\/\s*span>/g) : responseText
+      const quoteText = !!formatQuote ? hasSpan ? formatQuote[0].replaceAll(/(<([^>]+)>)/gi, '') : formatQuote : ''
 
       if(!!quoteText && quoteText !== '') setModelResponse(quoteText)
     } catch (error) {

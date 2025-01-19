@@ -112,7 +112,7 @@ export const awsRegion = [
 export const bedrockModelID = [
   'amazon.nova-pro-v1:0',
   'cohere.command-r-v1:0',
-  'meta.llama3-2-1b-instruct-v1:0'
+  'arn:aws:bedrock:us-east-1:836473520561:inference-profile/us.meta.llama3-2-1b-instruct-v1:0'
 ]
 
 export const languages = [

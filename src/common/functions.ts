@@ -66,27 +66,6 @@ export function apiRequest(url: Url, queryString: string | undefined, method: Ap
   return promise as PromiseWithCancel<any>
 }
 
-export async function bedrockSendCommand(command: InvokeModelCommand, response: React.Dispatch<React.SetStateAction<any>>, loading: React.Dispatch<React.SetStateAction<boolean>>) {
-  /* setQuote(false)
-  setLoading(true)
-  try {
-    const response = await bedrockRunTimeClient.send(command)
-    const jsonResponse = Buffer.from(response?.body).toString('utf8')
-    const responseData = JSON.parse(jsonResponse)
-    const responseText = responseData?.generations[0]?.text
-    const formatQuote = responseText?.match(/<\s*span[^>]*>(.*?)<\s*\/\s*span>/g)
-    const quoteText = !!formatQuote ? formatQuote[0].replaceAll(/(<([^>]+)>)/gi, '') : ''
-
-    if(!!quoteText && quoteText !== '') setModelResponse(quoteText)
-  } catch (error) {
-    console.log("error: ", error)
-    setError(error)
-  } finally {
-    setQuote(true)
-    setLoading(false)
-  } */
-}
-
 export function removeBodyClasses() {
   const bodyElement = document.getElementById('next-body')
   if(!!bodyElement) bodyElement.className = ''
