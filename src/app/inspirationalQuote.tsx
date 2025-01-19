@@ -1,15 +1,14 @@
 'use client'
 
 import React from 'react'
+import { awsRegion, bedrockModelID } from '@component/common/constants'
 import { AWSCredentials, CohereRequestBody } from '@component/common/types'
 import { BedrockRuntimeClient, InvokeModelCommand, InvokeModelCommandInput } from '@aws-sdk/client-bedrock-runtime'
 
 export default function InspirationalQuote() {
-  const awsRegion = !!process?.env.NEXT_PUBLIC_AWS_REGION ? process.env.NEXT_PUBLIC_AWS_REGION : ''
   const awsAccessKeyID = !!process?.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID ? process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID : ''
   const awsSecretAccessKey = !!process?.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY ? process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY : ''
   const awsSessionToken = !!process?.env.NEXT_PUBLIC_AWS_SESSION_TOKEN ? process.env.NEXT_PUBLIC_AWS_SESSION_TOKEN : ''
-  const bedrockModelID = !!process?.env.NEXT_PUBLIC_MODEL_ID ? process.env.NEXT_PUBLIC_MODEL_ID : ''
   const [modelResponse, setModelResponse] = React.useState<any>(null)
   const [error, setError] = React.useState<any>(null)
   const [quote, setQuote] = React.useState<boolean>(false)
@@ -30,12 +29,12 @@ export default function InspirationalQuote() {
   }
 
   const bedrockRunTimeClient = new BedrockRuntimeClient({
-    region: awsRegion,
+    region: awsRegion[0],
     credentials,
   })
 
   const invokeModelInput: InvokeModelCommandInput = {
-    modelId: bedrockModelID,
+    modelId: bedrockModelID[2],
     contentType: "application/json",
     accept: "*/*",
     body: JSON.stringify(requestBody),

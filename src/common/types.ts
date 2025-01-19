@@ -124,3 +124,11 @@ export type CohereRequestBody = {
   k: number,
   max_tokens: number
 }
+
+export type LlamaRequestBody = {
+  prompt: string,
+  temperature: number,
+  p: number
+  k: number,
+  max_tokens: number
+}

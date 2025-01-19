@@ -102,6 +102,19 @@ export const contactNav: ContactNavProps[] = [{
   targetBlank: true
 }]
 
+export const awsRegion = [
+  'us-east-1',
+  'us-east-2',
+  'us-west-1',
+  'us-west-2'
+]
+
+export const bedrockModelID = [
+  'amazon.nova-pro-v1:0',
+  'cohere.command-r-v1:0',
+  'meta.llama3-2-1b-instruct-v1:0'
+]
+
 export const languages = [
   'English',
   'Arabic',
