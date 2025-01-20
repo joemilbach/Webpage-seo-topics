@@ -82,6 +82,7 @@ export type TextInputTypes = 'textarea' | 'email' | 'hidden' | 'number' | 'passw
 export type InputProps = {
   name: string;
   value: string;
+  file?: FileList | null
 }
 
 export type TextInputProps = {
@@ -103,6 +104,20 @@ export type TextInputProps = {
   rows?: number;
   min?: number;
   max?: number;
+}
+
+export type FileInputProps = {
+  type: 'file';
+  name: string;
+  accept: string;
+  multiple: boolean;
+  error: ErrorProps | undefined;
+  label: string;
+  handleOnChange: (input: InputProps, isRequired?: boolean, feedback?: string, override?: boolean) => void;
+  handleResetInput?: (inputName: string) => void;
+  feedbackMessage?: string;
+  isRequired?: boolean;
+  helperText?: string;
 }
 
 export interface PromiseWithCancel<T> extends Promise<T> {

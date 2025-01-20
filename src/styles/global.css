@@ -485,6 +485,14 @@ button.btn {
   box-shadow: .025rem .025rem .5rem -.125rem rgba(33,32,30,.35);
 }
 
+.form-minimal {
+  padding: 0;
+  border-radius: 0;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
 .form-group {
   position: relative;
   z-index: 5;
@@ -551,6 +559,29 @@ select.form-control {
   cursor: pointer;
   padding-right: 2.75rem;
 }
+.file-input .form-control {
+  position: relative;
+  appearance: none;
+  outline: 0;
+  background-image: none;
+  cursor: pointer;
+}
+
+.file-input .form-control::file-selector-button {
+  background-color: var(--theme-secondary);
+  color: var(--body-bg-color);
+  padding: .75rem 1.25rem;
+  margin: -.75rem 1.25rem -.7rem -1.15rem;
+  border-radius: 1.5rem 0 0 1.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all .1s ease-out;
+  
+}
+
+.file-input .form-control:hover::file-selector-button {
+  background-color: var(--theme-secondary-light);
+}
 
 .form-control-search {
   padding-right: 4.125rem;
@@ -589,10 +620,18 @@ select.form-control {
   transition: all .1s ease-out;
 }
 
-.form-control:focus ~ .form-label,
-.valid ~ .form-label {
+.file-input .form-control ~ .form-label {
   left: 1.25rem;
-  top: -.625rem;
+  top: -1.625rem;
+  font-size: .95rem;
+  background: linear-gradient(0deg, rgba(255,255,255,1) 35%, rgba(255,255,255,0) 65%); 
+}
+
+.form-control:focus ~ .form-label,
+.valid ~ .form-label,
+.file-input .form-control:focus ~ .form-label {
+  left: 1.25rem;
+  top: -1.625rem;
   font-size: .95rem;
   color: var(--theme-secondary);
   background: linear-gradient(0deg, rgba(255,255,255,1) 35%, rgba(255,255,255,0) 65%); 
@@ -630,6 +669,7 @@ select.form-control {
   line-height: 1;
   font-weight: 300;
   padding: .25rem .5rem;
+  margin-left: .5rem;
   color: var(--body-bg-color);
   border-radius: 2px;
   background-color: var(--theme-danger);
@@ -673,27 +713,27 @@ select.form-control {
   margin-left: 1.25rem;
 }
 
-/* .form-group > .btn-reset {
+.file-input > .btn-reset {
   position: absolute;
   top: 50%;
   transform: translate(0, -50%);
   right: .75rem;
 }
 
-.form-group > .btn-reset > span {
+.file-input > .btn-reset > span {
   line-height: 2;
   height: 2rem;
 }
 
-.form-group > .btn-reset:hover span {
+.file-input > .btn-reset:hover span {
   margin-left: -.25rem;
 }
 
-.form-group > .btn-reset > span::after,
-.form-group > .btn-reset > span::before {
+.file-input > .btn-reset > span::after,
+.file-input > .btn-reset > span::before {
   height: 2rem;
   width: 2rem;
-} */
+}
 
 /* Helper Text */
 
@@ -704,8 +744,7 @@ select.form-control {
 }
 
 .form-require-text {
-  padding: 0 1rem;
-  color: var(--theme-secondary-light);
+  margin-left: .5rem;
 }
 
 /* Loader */

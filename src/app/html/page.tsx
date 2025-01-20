@@ -1,8 +1,7 @@
-import React from 'react'
 import { Metadata } from 'next'
-import Link from 'next/link'
+import React from 'react'
 import Container from '@component/common/container'
-import SvgImg from '@component/common/svg'
+import FormUpload from '@component/common/forms/upload'
 
 export const metadata: Metadata = {
   title: 'Webpage: SEO Tag & Social Media Topic Generation',
@@ -11,19 +10,10 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <Container page={'html-generationo'} pageTemplate={'two-col'}>
+    <Container page={'html-generation'} pageTemplate={'two-col'}>
       <section className="section">
         <h1>Let&rsquo;s Get Started</h1>
-
-        <div className="card-grid">
-          <Link className="card card-link" href="/analysis">
-            <SvgImg name={'analysis'} type={'icn'} role={'img'} width={16} height={16} /> Content Analysis
-          </Link>
-          
-          <Link className="card card-link" href="/">
-            <SvgImg name={'coding'} type={'icn'} role={'img'} width={16} height={16} /> HTML Generation
-          </Link>
-        </div>
+        <FormUpload />
       </section>
     </Container>
   )

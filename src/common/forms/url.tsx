@@ -1,12 +1,12 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
-import TextInput from '@component/common/textInput'
+import TextInput from '@component/common/forms/textInput'
 import SvgImg from '@component/common/svg'
 import { ErrorProps, FormValuesProps, InputProps } from '@component/common/types'
 import { emailRegex, urlRegex } from '@component/common/functions'
 
-function Form() {
+function FormURL() {
   const [formError, setFormError] = useState<ErrorProps[] | undefined>(undefined)
   const [formSubmission, setFormSubmission] = useState<boolean | undefined>(false)
   const [formValues, setFormValues] = useState<FormValuesProps>({formURL: ''})
@@ -129,4 +129,4 @@ function Form() {
   );
 }
 
-export default Form
+export default FormURL
