@@ -1,77 +1,89 @@
-import { PromiseWithCancel, ApiMethods } from '@component/common/types'
-import { Url } from 'next/dist/shared/lib/router/router'
-import { InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime'
+import { daysOfWeek, months } from '@component/common/constants'
+import { PromiseWithCancel, ApiMethods, DateInfo } from '@component/common/types'
 
-export function timestampToDate(timestamp: number): Date {
-  const date = new Date(timestamp * 1000);
-  return date
+export function timestampToDate(timestamp: number): Date | undefined {
+  if (isNaN(timestamp) || timestamp < 0) return undefined
+  const date = new Date(timestamp * 1000)
+  if(!date || isNaN(date.getTime())) return undefined;
+  return date;
 }
 
-export function dateToTimestamp(date: Date): number {
-  const timestamp = Math.floor(date.getTime() / 1000);
-  return timestamp
+export function dateToTimestamp(date: Date): number | undefined {
+  if(!(date instanceof Date)) return undefined
+  return Math.floor(date.getTime() / 1000)
 }
 
-export function dateBuilder(date: Date): { day: string, month: string, date: number, suffix: string, year: number } {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+function getSuffix(dayOfMonth: number): string {
+  if(
+    (dayOfMonth >= 4 && dayOfMonth <= 20)
+    || (dayOfMonth >= 24 && dayOfMonth <= 30)
+  ) {
+    return 'th'
+  }
+  const lastDigit = dayOfMonth % 10
+  return ['st', 'nd', 'rd'][lastDigit - 1] ?? 'th'
+}
 
-  const dayOfWeek = days[date.getDay()]
+export function dateBuilder(date: Date): DateInfo | undefined {
+  if (!(date instanceof Date)) return undefined
+
+  const dayOfWeek = daysOfWeek[date.getDay()]
   const dayOfMonth = date.getDate()
   const month = months[date.getMonth()]
-  const year = date.getFullYear()
-  const suffix = (dayOfMonth >= 4 && dayOfMonth <= 20) || (dayOfMonth >= 24 && dayOfMonth <= 30) ?
-    'th' :
-    ['st', 'nd', 'rd'][dayOfMonth % 10 - 1]
 
-  return { day: dayOfWeek, month, date: dayOfMonth, suffix, year }
+  return { 
+    day: dayOfWeek, 
+    month, 
+    date: dayOfMonth, 
+    suffix: getSuffix(dayOfMonth), 
+    year: date.getFullYear()
+  }
 }
 
 export const emailRegex = /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/
 
-export const urlRegex = /(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/
+export const urlRegex = /^(https?:)\/\/([\w.-]*)\/?([^\s]*)?$/
 
-export function capitalizedSentence(string: string) {
+export function capitalizedSentence(string: string): string {
+  if(typeof string !== 'string' || string.length === 0) return ''
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-function isAbortError(error: any): error is DOMException {
-  if(!!error && error.name !== 'AbortError') return true
-  return false
+function handleApiError(error: unknown): string | never {
+  if(error instanceof Error) {
+    return error.message
+  } else {
+    throw new Error(`Unknown error: ${String(error)}`)
+  }
 }
 
-export function apiRequest(url: Url, queryString: string | undefined, method: ApiMethods, body?: any, headers?: HeadersInit) {
+export function apiRequest(url: string, queryString?: string, method: ApiMethods = 'GET', body?: any, headers?: HeadersInit) {
   const controller = new AbortController()
   const signal = controller.signal
-  const config = {
-    headers: !!headers ? headers : {},
-    ...(!!body && { body })
-  }
-  const promise = new Promise(async (resolve) => {
+  
+  const config: RequestInit = {
+    headers: headers || {},
+    ...(body && { body }),
+    method,
+    signal
+  };
+
+  return new Promise<any>(async (resolve, reject) => {
     try {
-      const request = await fetch(
-        `${url}?${queryString}`, {
-          method,
-          signal,
-          ...config
-        })
-      const response = await request?.json()
-      resolve(response)
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : String(error)
-      if (!isAbortError(error)) resolve(message)
+      const requestUrl = `${url}${queryString ? `?${queryString}` : ''}`;
+      const response = await fetch(requestUrl, config);
+      if(!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+      resolve(await response.json())
+    } catch(error: unknown) {
+      reject(handleApiError(error))
     }
-  });
-  (promise as PromiseWithCancel<any>).cancel = () => controller.abort()
-  return promise as PromiseWithCancel<any>
+  }) as PromiseWithCancel<any>
 }
 
-export function removeBodyClasses() {
-  const bodyElement = document.getElementById('next-body')
-  if(!!bodyElement) bodyElement.className = ''
-}
-
-export function addBodyClasses(classes: string) {
-  const bodyElement = document.getElementById('next-body')
-  if(!!bodyElement) bodyElement.classList.add(classes)
+export function modifyBodyClasses(classes: string | undefined) {
+  const bodyElement = document.getElementById('next-body') as HTMLElement
+  if(!bodyElement || !classes?.trim()) return
+  bodyElement.classList.add(classes.trim())
 }

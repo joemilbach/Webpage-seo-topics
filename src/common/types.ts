@@ -33,8 +33,8 @@ export type SvgProps = {
   width?: number;
   height?: number;
   className?: string;
-  styles?: any;
-  role?: string;
+  styles?: React.CSSProperties;
+  role?: 'presentation' | 'img';
 }
 
 export type NavProps = {
@@ -64,6 +64,14 @@ export type CardProps = {
   isLinked: boolean;
   link?: LinkProps;
   customClass?: string;
+}
+
+export interface DateInfo {
+  day: string;
+  month: string;
+  date: number;
+  suffix: string;
+  year: number;
 }
 
 export type ErrorProps = {

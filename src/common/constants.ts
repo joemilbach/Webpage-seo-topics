@@ -102,6 +102,15 @@ export const contactNav: ContactNavProps[] = [{
   targetBlank: true
 }]
 
+export const daysOfWeek = [
+  'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
+]
+
+export const months = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+]
+
 export const awsRegion = [
   'us-east-1',
   'us-east-2',

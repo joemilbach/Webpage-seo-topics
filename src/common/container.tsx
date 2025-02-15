@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-//import Header from '@component/common/header'
 import Aside from '@component/common/aside'
 import Footer from '@component/common/footer'
 import { ContainerProps } from './types'

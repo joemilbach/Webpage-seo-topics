@@ -6,11 +6,11 @@ import { CardProps } from './types'
 function Card({ children, isLinked, link, customClass }: CardProps) {
   const cssClass = `card${isLinked ? ' card-link' : ''}${!!customClass ? ' ' + customClass : ''}`
   
-  return(isLinked ? (
+  return(isLinked && link ? (
     <Link
       className={cssClass}
-      href={!!link && link?.url ? link.url : ''}
-      target={!!link && link?.target ? link.target : '_self'}
+      href={link?.url ? link.url : ''}
+      target={link?.target ? link.target : '_self'}
     >
       {children}
     </Link>

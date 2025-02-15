@@ -42,23 +42,39 @@ const icons = {
   </>
 }
 
-function SvgImg({ name, className, styles, role, type, width, height }: SvgProps) {
-  const svgRole  = !!role ? role : 'img'
-  const svgWidth = !!width ? width : 16
-  const svgHeight = !!height ? height: 16
-  const svgClass = !!className ? `${type} ${className}` : `${type} ${name}`
-  const svgStyles = !!styles ? styles : null
-  let svgViewbox = '0 -960 960 960'
+function SvgImg({ 
+  name, 
+  className = '', 
+  styles, 
+  role = 'img', 
+  type, 
+  width = 16, 
+  height = 16 
+}: SvgProps) {
+  const svgClass = `${type} ${name} ${className}`
+  let viewBox = '0 -960 960 960'
 
-  if (name === 'facebook' || name === 'linkedin') {
-      svgViewbox = `0 0 ${svgWidth} ${svgHeight}`
+  if (['facebook', 'linkedin'].includes(name)) {
+    viewBox = `0 0 ${width} ${height}`
   }
 
   return (
-    <svg className={svgClass} fill="currentColor" focusable="false" width={svgWidth} height={svgHeight} data-prefix={type} role={svgRole} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox={svgViewbox} style={svgStyles}>
-      { icons[name]() }
+    <svg 
+      className={svgClass} 
+      fill="currentColor" 
+      focusable="false" 
+      width={width} 
+      height={height} 
+      data-prefix={type} 
+      role={role} 
+      aria-hidden="true" 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox={viewBox} 
+      style={styles}
+    >
+      {icons[name]()}
     </svg>
-  )
+  );
 }
 
 export default SvgImg

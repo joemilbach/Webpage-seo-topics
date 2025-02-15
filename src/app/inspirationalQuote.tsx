@@ -65,6 +65,7 @@ export default function InspirationalQuote() {
     } finally {
       setQuote(true)
       setLoading(false)
+      console.log('error: ', error)
     }
   }
 
