@@ -12,7 +12,8 @@ const FileInput = React.memo(function TextInput(fileInputProps: FileInputProps) 
     required,
     id: fileInputProps.name,
     name: fileInputProps.name,
-    className: `form-control form-control-${fileInputProps.type}`
+    className: `form-control form-control-${fileInputProps.type}`,
+    value: fileInputProps?.value
   }
 
   function HelperText({ value }: HelperTextProps): React.ReactElement | null {

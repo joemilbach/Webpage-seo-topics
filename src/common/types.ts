@@ -114,9 +114,13 @@ export type TextInputProps = {
   max?: number;
 }
 
+export type AcceptTextFilesProps = 'application/msword' | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' | 'application/pdf' | 'text/plain'
+
 export type FileInputProps = {
   type: 'file';
   name: string;
+  value: string;
+  ref: any;
   accept: string;
   multiple: boolean;
   error: ErrorProps | undefined;
@@ -132,7 +136,7 @@ export interface PromiseWithCancel<T> extends Promise<T> {
   cancel: () => void;
 }
 
-export type ApiMethods = 'GET' | 'POST' | 'PUT' | 'DELETE'
+export type ApiMethods = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
 
 export type AWSCredentials = {
   accessKeyId: string,

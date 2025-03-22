@@ -25,7 +25,9 @@ function getSuffix(dayOfMonth: number): string {
 }
 
 export function dateBuilder(date: Date): DateInfo | undefined {
-  if (!(date instanceof Date)) return undefined
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    return undefined;
+  }
 
   const dayOfWeek = daysOfWeek[date.getDay()]
   const dayOfMonth = date.getDate()
@@ -49,6 +51,8 @@ export function capitalizedSentence(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
+const DEFAULT_METHOD: ApiMethods = 'GET'
+
 function handleApiError(error: unknown): string | never {
   if(error instanceof Error) {
     return error.message
@@ -57,13 +61,19 @@ function handleApiError(error: unknown): string | never {
   }
 }
 
-export function apiRequest(url: string, queryString?: string, method: ApiMethods = 'GET', body?: any, headers?: HeadersInit) {
+export function apiRequest(
+  url: string,
+  queryString?: string,
+  method: ApiMethods = DEFAULT_METHOD,
+  body?: any,
+  headers?: HeadersInit
+): PromiseWithCancel<any> {
   const controller = new AbortController()
   const signal = controller.signal
   
   const config: RequestInit = {
     headers: headers || {},
-    ...(body && { body }),
+    ...(body && { body: JSON.stringify(body) }),
     method,
     signal
   };

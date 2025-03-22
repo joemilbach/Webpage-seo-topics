@@ -10,7 +10,7 @@ export default function InspirationalQuote() {
   const awsSecretAccessKey = !!process?.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY ? process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY : ''
   const awsSessionToken = !!process?.env.NEXT_PUBLIC_AWS_SESSION_TOKEN ? process.env.NEXT_PUBLIC_AWS_SESSION_TOKEN : ''
   const [modelResponse, setModelResponse] = React.useState<any>(null)
-  const [error, setError] = React.useState<any>(null)
+  const [errorMessage, setErrorMessage] = React.useState<any>(null)
   const [quote, setQuote] = React.useState<boolean>(false)
   const [loading, setLoading] = React.useState<boolean>(false)
   const promptMessage = `Find one smaller quote from Deep Thoughts by Jack Handey. Format the quote inside an html span tag.`;
@@ -61,11 +61,11 @@ export default function InspirationalQuote() {
       if(!!quoteText && quoteText !== '') setModelResponse(quoteText)
     } catch (error) {
       console.log("error: ", error)
-      setError(error)
+      setErrorMessage(error)
     } finally {
       setQuote(true)
       setLoading(false)
-      console.log('error: ', error)
+      console.log('errorMessage: ', errorMessage)
     }
   }
 
@@ -78,15 +78,17 @@ export default function InspirationalQuote() {
             type="button"
             className='btn'
             aria-label='Get deep thought'
-            onClick={() => {
-              getQuote()
-            }}
+            disabled={!!errorMessage}
+            onClick={() => {getQuote() }}
           >
             Food for Thought
           </button>
         )}
         {quote ? (
           <blockquote className="fade-in" style={{ marginTop: '1rem' }}><em>{modelResponse}</em></blockquote>
+        ) : null}
+        {errorMessage ? (
+          <small className="fade-in" style={{ marginTop: '1rem' }}>{errorMessage.toString()}</small>
         ) : null}
       </div>
     </>

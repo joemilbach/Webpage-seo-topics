@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useState, useEffect, useRef } from 'react'
 import FileInput from '@component/common/forms/fileInput'
 import { ErrorProps, FormValuesProps } from '@component/common/types'
 
@@ -14,12 +14,14 @@ function FormUpload() {
   const [formError, setFormError] = useState<ErrorProps[] | undefined>(undefined)
   const [formSubmission, setFormSubmission] = useState<boolean | undefined>(false)
   const [formValues, setFormValues] = useState<FormValuesProps>({formFile: ''})
-  const [currentFile, setCurrentFile] = useState<File>()
+  const [currentFile, setCurrentFile] = useState<File | undefined>(undefined)
+  const fileRef = useRef<File | undefined>(undefined);
+  const [fileText, setFileText] = useState<String | undefined>(undefined)
 
   function handleOnChange(input: FileInputProps, isRequired?: boolean, feedback?: string) {
     const { name, value, file } = input
     setFormValues((prev) => ({ ...prev, [name]: value }))
-    !!file && file?.length > 0 && setCurrentFile(file?.[0])
+    setCurrentFile(file?.[0])
     !!isRequired && handleErrors(input, isRequired && !!feedback ? feedback : '')
   }
  
@@ -46,17 +48,22 @@ function FormUpload() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
-    setFormSubmission(undefined)
+
+    setFileText('Done')
+    console.log("currentFile: ", currentFile) 
+
+
+    /* setFormSubmission(undefined)
 
     const postError = false
 
-    console.log("currentFile: ", currentFile)
+    console.log(fileText && console.log("Number of characters: ", fileText.trim().length))
 
     if (!postError) {
       setFormSubmission(true)
       resetFormInput()
       return
-    }
+    } */
   }
 
   function resetSubmissionError() {
@@ -68,12 +75,20 @@ function FormUpload() {
     setFormValues({formFile: ''})
   }
 
+  useEffect(() => {
+    if(fileText && fileText?.length > 5000) {
+      console.log("fileText: ", fileText?.length)
+    }
+  }, [fileText]);
+
   return (
     <form className="form form-minimal" onSubmit={handleSubmit}>
       <FileInput
         type={'file'}
         name={'formFile'}
-        accept={'application/pdf,application/msword,text/plain'}
+        value={formValues?.formFile}
+        ref={fileRef}
+        accept={'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf,text/plain'}
         multiple={false}
         error={formError?.find(error => error?.input === 'formFile')}
         label={'Upload Document (pdf, docx, doc)'}
